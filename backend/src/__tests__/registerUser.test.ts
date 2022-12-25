@@ -30,6 +30,7 @@ describe('testing user registration', () => {
     const wrongLongName: string = "azertyuiopqsdfghjklmw"
     const wrongPasswordOne: string = "azer"
     const wrongPasswordTwo: number = 123
+    const wrongPasswordTree: string = "azertty"
     const wrongEmailOne: string = "azeezadsf"
     const wrongEmailTwo: string = "azeaze.com"
     const wrongEmailTree: string = "zaeeaz@gmail.azettdsgf"
@@ -106,7 +107,7 @@ describe('testing user registration', () => {
         })
     })
 
-    it('should return [first name must content a least 3 char min and 20 max][SHORT (2 char)]', async () => {
+    it('should return [first name must content a least 3 char min and 20 max] using short mock first name less 2 char', async () => {
         const res = await req.post('/register').send({
             firstname: wrongShorTName, lastname, email, password
         })
@@ -118,7 +119,7 @@ describe('testing user registration', () => {
         })
     })
 
-    it('should return [first name must content a least 3 char min and 20 max][LONG(21 char)]', async () => {
+    it('should return [first name must content a least 3 char min and 20 max] using long mock first name than 20 char', async () => {
         const res = await req.post('/register').send({
             firstname: wrongLongName, lastname, email, password
         })
@@ -127,6 +128,102 @@ describe('testing user registration', () => {
         expect(res.body).toEqual({
             status: 'failed',
             message: 'first name must content a least 3 char min and 20 max'
+        })
+    })
+
+    it('should return [last name must content a least 3 char min and 20 max] using short mock last name less 2 char', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname: wrongShorTName, email, password
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'last name must content a least 3 char min and 20 max'
+        })
+    })
+
+    it('should return [last name must content a least 3 char min and 20 max] using long mock last name than 20 char', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname: wrongLongName, email, password
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'last name must content a least 3 char min and 20 max'
+        })
+    })
+
+    it('should return [please enter a valid email] using an simple string', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname, email: wrongEmailOne, password
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'please enter a valid email'
+        })
+    })
+
+    it('should return [please enter a valid email] using an email with a missing @', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname, email: wrongEmailTwo, password
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'please enter a valid email'
+        })
+    })
+
+    it('should return [please enter a valid email] using an email with a missing dot', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname, email: wrongEmailTree, password
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'please enter a valid email'
+        })
+    })
+
+    it('should return [password must content 5 char and at least one number] using an password with missing number', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname, email, password: wrongPasswordTree
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'password must content 5 char and at least one number'
+        })
+    })
+
+    it('should return [password must content 5 char and at least one number] using an password with missing char', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname, email, password: wrongPasswordTwo
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'password must content 5 char and at least one number'
+        })
+    })
+
+    it('should return [password must content 5 char and at least one number] using an password less 5 char', async () => {
+        const res = await req.post('/register').send({
+            firstname, lastname, email, password: wrongPasswordOne
+        })
+
+        expect(res.status).toEqual(400)
+        expect(res.body).toEqual({
+            status: 'failed',
+            message: 'password must content 5 char and at least one number'
         })
     })
 })
