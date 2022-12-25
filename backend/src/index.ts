@@ -1,17 +1,13 @@
 import "reflect-metadata"
-import app from "./server";
-import {AppDataSource} from "./data-source";
+import * as dotenv from "dotenv";
 import {routes} from "./routes";
-import express from "express";
-import cors from "cors";
-import {Middleware} from "./middlewares/Middleware";
+import {Server} from "./server";
+import {AppDataSource} from "./data-source";
 
-AppDataSource.initialize().then(() => console.log("Database initialized"));
+dotenv.config();
 
-app.use(Middleware.limiter)
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
-app.use(cors());
+const port = process.env.PORT;
+const app = Server.getServer();
 
 (async () => {
     for await (const route of routes) {
@@ -33,3 +29,12 @@ app.use(cors());
         }
     }
 })();
+
+if (process.env.NODE_ENV != "test") {
+    AppDataSource.initialize()
+        .then(() => console.log('connection with database etablished'));
+
+    app.listen(port, () => console.log(`server listen on: http://localhost:${port}`));
+}
+
+export default app;

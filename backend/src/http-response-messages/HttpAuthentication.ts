@@ -9,7 +9,7 @@ export class HttpAuthentication extends HttpResponse {
         await this.httpResponseMessage(res, 401, 'failed', 'please fill the correct data')
 
     static userAlreadyExist = async (res: Response): Promise<Response> =>
-        await this.httpResponseMessage(res, 409, 'failed', 'user already exixt')
+        await this.httpResponseMessage(res, 409, 'failed', 'user already exist')
 
     static userNotFound = async (res: Response): Promise<Response> =>
         await this.httpResponseMessage(res, 404, 'failed', 'not found')

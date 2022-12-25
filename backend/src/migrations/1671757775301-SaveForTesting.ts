@@ -7,5 +7,4 @@ export class SaveForTesting1671757775301 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
     }
-
 }
