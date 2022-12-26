@@ -24,6 +24,7 @@ export default {
     ],
     testEnvironment: 'node',
     testPathIgnorePatterns: [
-        "<rootDir>/src/__tests__/utils"
+        "<rootDir>/src/__tests__/helpers",
+        "<rootDir>/src/__tests__/mockData"
     ]
 };

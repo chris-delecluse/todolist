@@ -2,7 +2,18 @@ import * as dotenv from "dotenv";
 import supertest from "supertest";
 import app from "../index";
 import {AppDataSource} from "../data-source";
-import sleep from "./utils/sleep";
+import sleep from "./helpers/sleep";
+import {
+    userToRegister,
+    userWithMissingEmail,
+    userWithMissingFirstname,
+    userWithMissingLastname,
+    userWithMissingPassword, userWithWrongEmailOne, userWithWrongEmailTree, userWithWrongEmailTwo,
+    userWithWrongLongFirstname,
+    userWithWrongLongLastname, userWithWrongPasswordOne, userWithWrongPasswordTree, userWithWrongPasswordTwo,
+    userWithWrongShortFirstname,
+    userWithWrongShortLastname
+} from "./mockData/mockUserRegister";
 
 dotenv.config()
 const req = supertest(app)
@@ -21,24 +32,8 @@ afterAll(async () => {
 })
 
 describe('testing user registration', () => {
-    const firstname: string = "john"
-    const lastname: string = "doe"
-    const email: string = "test@gmail.com"
-    const password: string = "123azZe"
-
-    const wrongShorTName: string = "te"
-    const wrongLongName: string = "azertyuiopqsdfghjklmw"
-    const wrongPasswordOne: string = "azer"
-    const wrongPasswordTwo: number = 123
-    const wrongPasswordTree: string = "azertty"
-    const wrongEmailOne: string = "azeezadsf"
-    const wrongEmailTwo: string = "azeaze.com"
-    const wrongEmailTree: string = "zaeeaz@gmail.azettdsgf"
-
     it('should return [register user successfully]', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email, password
-        })
+        const res = await req.post('/register').send(userToRegister)
 
         expect(res.status).toEqual(201)
         expect(res.body).toEqual({
@@ -48,9 +43,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [user already exist]', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email, password
-        })
+        const res = await req.post('/register').send(userToRegister)
 
         expect(res.status).toEqual(409)
         expect(res.body).toEqual({
@@ -60,9 +53,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a firstname]', async () => {
-        const res = await req.post('/register').send({
-            lastname, email, password
-        })
+        const res = await req.post('/register').send(userWithMissingFirstname)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -72,9 +63,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a lastname]', async () => {
-        const res = await req.post('/register').send({
-            firstname, email, password
-        })
+        const res = await req.post('/register').send(userWithMissingLastname)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -84,9 +73,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a email]', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, password
-        })
+        const res = await req.post('/register').send(userWithMissingEmail)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -96,9 +83,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a password]', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email
-        })
+        const res = await req.post('/register').send(userWithMissingPassword)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -108,9 +93,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [first name must content a least 3 char min and 20 max] using short mock first name less 2 char', async () => {
-        const res = await req.post('/register').send({
-            firstname: wrongShorTName, lastname, email, password
-        })
+        const res = await req.post('/register').send(userWithWrongShortFirstname)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -120,9 +103,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [first name must content a least 3 char min and 20 max] using long mock first name than 20 char', async () => {
-        const res = await req.post('/register').send({
-            firstname: wrongLongName, lastname, email, password
-        })
+        const res = await req.post('/register').send(userWithWrongLongFirstname)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -132,9 +113,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [last name must content a least 3 char min and 20 max] using short mock last name less 2 char', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname: wrongShorTName, email, password
-        })
+        const res = await req.post('/register').send(userWithWrongShortLastname)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -144,9 +123,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [last name must content a least 3 char min and 20 max] using long mock last name than 20 char', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname: wrongLongName, email, password
-        })
+        const res = await req.post('/register').send(userWithWrongLongLastname)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -156,9 +133,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a valid email] using an simple string', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email: wrongEmailOne, password
-        })
+        const res = await req.post('/register').send(userWithWrongEmailOne)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -168,9 +143,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a valid email] using an email with a missing @', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email: wrongEmailTwo, password
-        })
+        const res = await req.post('/register').send(userWithWrongEmailTwo)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -180,9 +153,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [please enter a valid email] using an email with a missing dot', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email: wrongEmailTree, password
-        })
+        const res = await req.post('/register').send(userWithWrongEmailTree)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -192,9 +163,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [password must content 5 char and at least one number] using an password with missing number', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email, password: wrongPasswordTree
-        })
+        const res = await req.post('/register').send(userWithWrongPasswordOne)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -204,9 +173,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [password must content 5 char and at least one number] using an password with missing char', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email, password: wrongPasswordTwo
-        })
+        const res = await req.post('/register').send(userWithWrongPasswordTwo)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
@@ -216,9 +183,7 @@ describe('testing user registration', () => {
     })
 
     it('should return [password must content 5 char and at least one number] using an password less 5 char', async () => {
-        const res = await req.post('/register').send({
-            firstname, lastname, email, password: wrongPasswordOne
-        })
+        const res = await req.post('/register').send(userWithWrongPasswordTree)
 
         expect(res.status).toEqual(400)
         expect(res.body).toEqual({
