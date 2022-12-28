@@ -21,7 +21,7 @@ export class JsonWebToken {
 
         const signOpts: SignOptions = {
             algorithm: "RS256",
-            expiresIn: Math.floor(Date.now() / 1000) + (60 * 60),
+            expiresIn: "1800s",
         };
 
         const privateKey: Secret = {

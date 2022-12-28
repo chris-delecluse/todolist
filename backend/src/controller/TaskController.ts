@@ -71,7 +71,7 @@ export class TaskController {
 
         const taskToStore: Tasks = new Tasks()
         taskToStore.task = task
-        taskToStore.user = user
+        taskToStore.userId = user.id
 
         await this._tastService.add(taskToStore)
 
@@ -92,7 +92,7 @@ export class TaskController {
 
         if (!task) return HttpTask.noTaskFound(res)
 
-        await this._tastService.updateDoneField(task.id!)
+        await this._tastService.updateDoneField(task.id)
 
         return res
             .status(200)

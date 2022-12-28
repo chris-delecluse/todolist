@@ -1,17 +1,16 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {User} from "./User";
+import {Column, Entity, ObjectID, ObjectIdColumn} from "typeorm";
 
 @Entity()
 export class Tasks {
-    @PrimaryGeneratedColumn("uuid")
-    id?: string;
+    @ObjectIdColumn()
+    id!: ObjectID
 
     @Column()
-    task?: string
+    task!: string
 
     @Column({default: false})
     done?: boolean
 
-    @ManyToOne(() => User, user => user.tasks)
-    user?: User;
+    @ObjectIdColumn()
+    userId?: ObjectID
 }

@@ -1,4 +1,3 @@
-// user with the correct data
 export const userToRegister = {
     firstname: "john",
     lastname: "doe",
@@ -6,8 +5,6 @@ export const userToRegister = {
     password: "test123"
 };
 
-
-// user with missing parameters section
 export const userWithMissingFirstname: object = {
     ...userToRegister,
     firstname: undefined
@@ -28,8 +25,6 @@ export const userWithMissingPassword: object = {
     password: undefined
 };
 
-
-// form validation (regex) section
 export const userWithWrongShortFirstname: object = {
     ...userToRegister,
     firstname: "te"

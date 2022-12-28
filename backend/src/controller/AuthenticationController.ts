@@ -41,7 +41,7 @@ export class AuthenticationController {
                 status: 'success',
                 results: {
                     token: token,
-                    expireIn: Math.floor(Date.now() / 1000) + (5 * 60)
+                    expireIn: 60000 * 30
                 }
             })
     };

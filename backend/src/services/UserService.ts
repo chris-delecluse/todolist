@@ -3,7 +3,7 @@ import { AppDataSource } from "../data-source";
 import { Repository }    from "typeorm";
 
 export class UserService {
-    private _repository: Repository<User> = AppDataSource.getRepository(User);
+    private _repository: Repository<User> = AppDataSource.getMongoRepository(User);
 
     getOneByEmail = async (email: string): Promise<User | null> => await this._repository.findOneBy({email});
 

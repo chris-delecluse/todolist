@@ -14,7 +14,7 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
-    await sleep(100)
+    await sleep(500)
 })
 
 afterAll(async () => {
