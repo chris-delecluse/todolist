@@ -1,25 +1,8 @@
-import * as dotenv from "dotenv";
 import supertest from "supertest";
 import app from "../index";
-import {AppDataSource} from "../data-source";
-import sleep from "./helpers/sleep";
-import * as myMock from "./mockData/mockUserRegister"
+import * as myMock from "./mock-data/mockUserRegister"
 
-dotenv.config()
 const req = supertest(app)
-
-beforeAll(async () => {
-    await AppDataSource.initialize()
-    console.log(`database connection etablished on: ${process.env.NODE_ENV} environement`)
-})
-
-afterEach(async () => {
-    await sleep(500)
-})
-
-afterAll(async () => {
-    await AppDataSource.destroy()
-})
 
 describe('testing user registration', () => {
     it('should return [register user successfully]', async () => {

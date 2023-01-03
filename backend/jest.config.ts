@@ -25,6 +25,7 @@ export default {
     testEnvironment: 'node',
     testPathIgnorePatterns: [
         "<rootDir>/src/__tests__/helpers",
-        "<rootDir>/src/__tests__/mockData"
-    ]
+        "<rootDir>/src/__tests__/mock-data"
+    ],
+    setupFilesAfterEnv: ["./jest.setup.ts"]
 };

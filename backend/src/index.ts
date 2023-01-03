@@ -32,7 +32,8 @@ const app = Server.getServer();
 
 if (process.env.NODE_ENV != "test") {
     AppDataSource.initialize()
-        .then(() => console.log('connection with database etablished'));
+        .then(() => console.log('connection with database etablished'))
+        .catch((err) => console.log(err))
 
     app.listen(port, () => console.log(`server listen on: http://localhost:${port}`));
 }

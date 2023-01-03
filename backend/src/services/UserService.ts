@@ -8,6 +8,6 @@ export class UserService {
     getOneByEmail = async (email: string): Promise<User | null> => await this._repository.findOneBy({email});
 
     add = async (user: User): Promise<void> => {
-        await this._repository.insert(user);
+        await this._repository.insert(user)
     };
 }
