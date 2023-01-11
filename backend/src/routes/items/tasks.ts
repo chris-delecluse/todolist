@@ -6,27 +6,27 @@ const taskController: TaskController = new TaskController();
 
 export const tasks: IRoute[] = [
     {
-        method: "POST",
+        method: "post",
         uri: "/tasks",
         middleware: [Middleware.jwt],
-        action: taskController.addTask
+        handler: taskController.addTask
     },
     {
-        method: "PUT",
+        method: "put",
         uri: "/tasks",
         middleware: [Middleware.jwt],
-        action: taskController.taskDone
+        handler: taskController.taskDone
     },
     {
-        method: "GET",
+        method: "get",
         uri: "/currentTasks",
         middleware: [Middleware.jwt],
-        action: taskController.getUserCurrentTasks
+        handler: taskController.getUserCurrentTasks
     },
     {
-        method: "GET",
+        method: "get",
         uri: "/taskHistory",
         middleware: [Middleware.jwt],
-        action: taskController.getUserTaskHistory
+        handler: taskController.getUserTaskHistory
     }
 ];

@@ -5,15 +5,15 @@ const authController: AuthenticationController = new AuthenticationController();
 
 export const authentication: IRoute[] = [
     {
-        method: "POST",
+        method: "post",
         uri: "/register",
         middleware: [],
-        action: authController.registerUser
+        handler: authController.registerUser
     },
     {
-        method: "POST",
+        method: "post",
         uri: "/login",
         middleware: [],
-        action: authController.loginUser
+        handler: authController.loginUser
     }
 ];

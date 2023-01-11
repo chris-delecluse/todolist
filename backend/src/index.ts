@@ -1,8 +1,8 @@
 import "reflect-metadata"
 import * as dotenv from "dotenv";
-import {routes} from "./routes";
 import {Server} from "./server";
 import {AppDataSource} from "./data-source";
+import {routes} from "./routes";
 
 dotenv.config();
 
@@ -11,24 +11,9 @@ const app = Server.getServer();
 
 (async () => {
     for await (const route of routes) {
-        switch (route.method) {
-            case "GET":
-                app.get(route.uri, route.middleware, route.action);
-                break;
-            case "POST":
-                app.post(route.uri, route.middleware, route.action);
-                break;
-            case "DELETE":
-                app.delete(route.uri, route.middleware, route.action);
-                break;
-            case "PUT":
-                app.put(route.uri, route.middleware, route.action);
-                break;
-            default :
-                console.error("Cannot access this request");
-        }
+        app[route.method](route.uri, route.middleware, route.handler);
     }
-})();
+})()
 
 if (process.env.NODE_ENV != "test") {
     AppDataSource.initialize()
