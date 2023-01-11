@@ -2,6 +2,7 @@ version: "3"
 
 services:
   server:
+    build: .
     image: backend:latest
     container_name: server
     ports:
@@ -10,6 +11,7 @@ services:
       - mongo
     volumes:
       - ./src:/backend/src
+    command: npm run start:dev
 
   mongo:
     image: mongo:latest

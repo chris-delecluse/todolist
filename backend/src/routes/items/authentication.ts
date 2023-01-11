@@ -15,5 +15,5 @@ export const authentication: IRoute[] = [
         uri: "/login",
         middleware: [],
         handler: authController.loginUser
-    }
+    },
 ];
