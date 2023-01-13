@@ -27,5 +27,5 @@ export default {
         "<rootDir>/src/__tests__/helpers",
         "<rootDir>/src/__tests__/mock-data"
     ],
-    setupFilesAfterEnv: ["./jest.setup.ts"]
+    setupFilesAfterEnv: ["./config/jest.setup.ts"],
 };

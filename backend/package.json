@@ -23,6 +23,7 @@
         "@types/jsonwebtoken": "^8.5.9",
         "@types/node": "^18.11.14",
         "@types/supertest": "^2.0.12",
+        "@types/yamljs": "^0.2.31",
         "nodemon": "^2.0.20",
         "rimraf": "^3.0.2",
         "supertest": "^6.3.3",
@@ -40,6 +41,7 @@
         "jsonwebtoken": "^8.5.1",
         "mongodb": "^3.7.3",
         "reflect-metadata": "^0.1.13",
-        "typeorm": "^0.3.11"
+        "typeorm": "^0.3.11",
+        "yamljs": "^0.3.0"
     }
 }

@@ -1,0 +1,41 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: 'API Example'
+  description: 'An example API'
+host: 'localhost:3000'
+basePath: '/api'
+schemes:
+  - http
+paths:
+  /users:
+    get:
+      summary: 'Get all users'
+      description: 'Retrieve a list of all users'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'Success'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+  /users/{id}:
+    get:
+      summary: 'Get user by id'
+      description: 'Retrieve a user by id'
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/User'
+        404:
+          description: 'User not found'

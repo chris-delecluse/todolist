@@ -20,7 +20,7 @@ export class Middleware {
 
         if (!token) return res.status(401).json({status: 'unauthorized'});
 
-        const publicKey: Secret = fs.readFileSync(path.join(__dirname, "./../../public.pem"));
+        const publicKey: Secret = fs.readFileSync(path.join(__dirname, "./../../accessTokenPublic.pem"));
 
         verify(token, publicKey, (err) =>
             err ? res.status(401).json({status: 'unauthorized'}) : next());

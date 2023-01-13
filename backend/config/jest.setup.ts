@@ -1,5 +1,5 @@
-import {AppDataSource} from "./src/data-source";
-import sleep from "./src/__tests__/helpers/sleep";
+import {AppDataSource} from "../src/data-source";
+import sleep from "../src/__tests__/helpers/sleep";
 
 beforeAll(async () => {
     await AppDataSource.initialize()

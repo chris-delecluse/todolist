@@ -3,11 +3,15 @@ import * as dotenv from "dotenv";
 import {Server} from "./server";
 import {AppDataSource} from "./data-source";
 import {routes} from "./routes";
+import {readSwaggerConfig} from "./helpers/mergeSwaggerConfig";
 
 dotenv.config();
 
 const port = process.env.PORT;
 const app = Server.getServer();
+
+const p = readSwaggerConfig('./src/swagger/endpoints');
+console.log(p);
 
 (async () => {
     for await (const route of routes) {
@@ -17,7 +21,7 @@ const app = Server.getServer();
 
 if (process.env.NODE_ENV != "test") {
     AppDataSource.initialize()
-        .then(() => console.log('connection with database etablished'))
+        .then(() => console.log('connection with database established'))
         .catch((err) => console.log(err))
 
     app.listen(port, () => console.log(`server listen on: http://localhost:${port}`));

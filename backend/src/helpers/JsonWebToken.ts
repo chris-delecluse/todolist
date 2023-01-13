@@ -5,8 +5,8 @@ import path from "path";
 import {Request} from "express";
 
 export class JsonWebToken {
-    private _privateHash: Buffer = fs.readFileSync(path.join(__dirname, "../../private.pem"))
-    private _publicHash: Buffer = fs.readFileSync(path.join(__dirname, "../../public.pem"))
+    private _privateHash: Buffer = fs.readFileSync(path.join(__dirname, "../../config/keys/access-token/accessTokenPrivate.pem"))
+    private _publicHash: Buffer = fs.readFileSync(path.join(__dirname, "../../config/keys/access-token/accessTokenPublic.pem"))
 
     getFromHeaders = (req: Request): string | undefined =>
         req.headers.authorization && req.headers.authorization.split(" ")[1]
