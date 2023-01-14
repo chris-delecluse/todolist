@@ -25,4 +25,6 @@ export class Middleware {
         verify(token, publicKey, (err) =>
             err ? res.status(401).json({status: 'unauthorized'}) : next());
     }
+
+
 }

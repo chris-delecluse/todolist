@@ -33,7 +33,7 @@ export class AuthenticationController {
         if (!user) return HttpAuthentication.loginIncorrectData(res)
         if (!await this._verifyPassword(password, user)) return HttpAuthentication.loginIncorrectData(res)
 
-        const token = this._jwtHelper.create(user)
+        const token = this._jwtHelper.create("access", user)
 
         return res
             .status(200)

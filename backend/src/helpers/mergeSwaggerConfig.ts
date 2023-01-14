@@ -9,7 +9,7 @@ const mergeSwaggerConfigs = (config: string[]): object => {
     }, {});
 }
 
-export const readSwaggerConfig = (directory: string) : object => {
+export const readSwaggerConfig = (directory: string): object => {
     const files = fs.readdirSync(directory);
 
     const configs: string[] = files

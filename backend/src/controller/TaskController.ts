@@ -22,7 +22,7 @@ export class TaskController {
     getUserCurrentTasks = async (req: Request, res: Response): Promise<Response> => {
         const token: string | undefined = this._jwtHelper.getFromHeaders(req)
 
-        const userToken = this._jwtHelper.decode(token!) as IToken
+        const userToken = this._jwtHelper.decode("access", token!) as IToken
 
         const user: User | null = await this._userService.getOneByEmail(userToken.email)
         const listOfCurrentTasks = await this._tastService.getCurrentTasks(user!)
@@ -41,7 +41,7 @@ export class TaskController {
     getUserTaskHistory = async (req: Request, res: Response): Promise<Response> => {
         const token: string | undefined = this._jwtHelper.getFromHeaders(req)
 
-        const userToken = this._jwtHelper.decode(token!) as IToken
+        const userToken = this._jwtHelper.decode("access", token!) as IToken
 
         const user: User | null = await this._userService.getOneByEmail(userToken.email)
         const listOfTaskHistory = await this._tastService.getTaskDone(user!)
@@ -63,7 +63,7 @@ export class TaskController {
         if (!task) return HttpTask.missingParameters(res, "task")
 
         const token: string | undefined = this._jwtHelper.getFromHeaders(req)
-        const decodedToken = this._jwtHelper.decode(token!) as IToken
+        const decodedToken = this._jwtHelper.decode("access", token!) as IToken
 
         const user: User | null = await this._userService.getOneByEmail(decodedToken.email)
 
