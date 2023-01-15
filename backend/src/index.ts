@@ -10,8 +10,7 @@ dotenv.config();
 const port = process.env.PORT;
 const app = Server.getServer();
 
-const p = readSwaggerConfig('./src/swagger/endpoints');
-console.log(p);
+const exampleOfSwaggerMerge = readSwaggerConfig('./src/swagger/endpoints');
 
 (async () => {
     for await (const route of routes) {

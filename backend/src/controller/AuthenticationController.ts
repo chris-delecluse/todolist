@@ -4,7 +4,7 @@ import {UserService} from "../services/UserService";
 import {User} from "../entities/User";
 import {IUserRegisterRequest} from "../models/IUserRegisterRequest";
 import {IUserLoginRequest} from "../models/IUserLoginRequest";
-import {JsonWebToken} from "../helpers/JsonWebToken";
+import {TokenManager} from "../helpers/TokenManager";
 import {HttpAuthentication} from "../http-response-messages/HttpAuthentication";
 import {HttpUser} from "../http-response-messages/HttpUser";
 import {HttpFormValidation} from "../http-response-messages/HttpFormValidation";
@@ -15,11 +15,11 @@ export class AuthenticationController {
     private _usernameRegex: RegExp = /^[a-zA-Z]{3,20}$/;
 
     private _userService: UserService;
-    private _jwtHelper: JsonWebToken;
+    private _jwtHelper: TokenManager;
 
     constructor() {
         this._userService = new UserService();
-        this._jwtHelper = new JsonWebToken();
+        this._jwtHelper = new TokenManager();
     }
 
     loginUser = async (req: Request, res: Response): Promise<Response> => {
@@ -33,7 +33,7 @@ export class AuthenticationController {
         if (!user) return HttpAuthentication.loginIncorrectData(res)
         if (!await this._verifyPassword(password, user)) return HttpAuthentication.loginIncorrectData(res)
 
-        const token = this._jwtHelper.create("access", user)
+        const token = this._jwtHelper.createAccessToken(user);
 
         return res
             .status(200)
