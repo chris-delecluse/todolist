@@ -1,13 +1,16 @@
-import {NextFunction, Request, Response} from "express";
+import {NextFunction, Response} from "express";
 import rateLimit, {RateLimitRequestHandler} from 'express-rate-limit'
-import path from "path";
-import * as fs from "fs";
-import {Secret, verify} from "jsonwebtoken";
 import {TokenManager} from "../helpers/TokenManager";
+import {IRequest} from "../models/IRequest";
+import {IToken} from "../models/IToken";
 
+/**
+ * Class representing a middleware.
+ */
 export class Middleware {
-    private static  _jwtHelper: TokenManager = new TokenManager()
-
+    /**
+     * A static variable for holding the rate limiter middleware.
+     */
     static limiter: RateLimitRequestHandler = rateLimit({
         windowMs: 15 * 60 * 1000,
         max: 50,
@@ -15,16 +18,27 @@ export class Middleware {
         legacyHeaders: false
     })
 
-    static jwt = async (req: Request, res: Response, next: NextFunction) => {
-        const token: string | undefined = this._jwtHelper.getTokenFromHeaders(req)
+    /**
+     * A static method for handling token authentication.
+     * @param {IRequest} req - The custom request extending the Express request object.
+     * @param {Response} res - The Express response object.
+     * @param {NextFunction} next - The Express next function.
+     */
+    static authenticateToken = async (req: IRequest, res: Response, next: NextFunction) => {
+        const tokenManager: TokenManager = new TokenManager()
 
+        const token = tokenManager.getTokenFromHeaders(req)
         if (!token) return res.status(401).json({status: 'unauthorized'});
 
-        const publicKey: Secret = this._jwtHelper.getPublicAccessKey()
+        try {
+            const decoded = tokenManager.decodeAccessToken(token) as IToken
 
-        verify(token, publicKey, (err) =>
-            err ? res.status(401).json({status: 'unauthorized'}) : next());
+            if (tokenManager.isExpired(decoded)) return res.status(401).json({status: 'unauthorized'});
+
+            req.user = decoded as IToken
+            next()
+        } catch (error) {
+            res.status(401).json({status: 'unauthorized'});
+        }
     }
-
-
 }

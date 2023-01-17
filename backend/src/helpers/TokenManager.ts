@@ -3,6 +3,7 @@ import {User} from "../entities/User";
 import {File} from "./File";
 import {Request} from "express";
 import * as dotenv from "dotenv";
+import {IToken} from "../models/IToken";
 
 dotenv.config();
 
@@ -22,6 +23,16 @@ export class TokenManager {
      * @return {string | undefined} The token string if it exists in the headers, otherwise undefined.
      */
     getTokenFromHeaders = (req: Request): string | undefined => req.headers.authorization && req.headers.authorization.split(" ")[1]
+
+    /**
+     * Check if the token are not expired.
+     * @param decoded The token decoded.
+     * @return boolean
+     */
+    isExpired(decoded: IToken): boolean {
+        const current_time = Math.floor(Date.now() / 1000);
+        return decoded.exp < current_time;
+    }
 
     /**
      * Get the public access key.
@@ -85,7 +96,7 @@ export class TokenManager {
 
         const privateKey: Secret = {
             key: buffer,
-            passphrase: process.env.PRIVATE_KEY_PASSPHRASE!
+            passphrase: process.env.PRIVATE_KEY_PASS_PHRASE!
         }
 
         return jwt.sign(payload, privateKey, signOpts);

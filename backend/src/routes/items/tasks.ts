@@ -8,25 +8,25 @@ export const tasks: IRoute[] = [
     {
         method: "post",
         uri: "/tasks",
-        middleware: [Middleware.jwt],
+        middleware: [Middleware.authenticateToken],
         handler: taskController.addTask
     },
     {
         method: "put",
         uri: "/tasks",
-        middleware: [Middleware.jwt],
+        middleware: [Middleware.authenticateToken],
         handler: taskController.taskDone
     },
     {
         method: "get",
         uri: "/currentTasks",
-        middleware: [Middleware.jwt],
+        middleware: [Middleware.authenticateToken],
         handler: taskController.getUserCurrentTasks
     },
     {
         method: "get",
         uri: "/taskHistory",
-        middleware: [Middleware.jwt],
+        middleware: [Middleware.authenticateToken],
         handler: taskController.getUserTaskHistory
     }
 ];
