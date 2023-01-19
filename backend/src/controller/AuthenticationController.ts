@@ -5,9 +5,11 @@ import {User} from "../entities/User";
 import {IUserRegisterRequest} from "../models/IUserRegisterRequest";
 import {IUserLoginRequest} from "../models/IUserLoginRequest";
 import {TokenManager} from "../helpers/TokenManager";
-import {HttpAuthentication} from "../http-response-messages/HttpAuthentication";
-import {HttpUser} from "../http-response-messages/HttpUser";
+import {HttpAuthError} from "../http-response-messages/HttpAuthError";
+import {HttpUserError} from "../http-response-messages/HttpUserError";
 import {HttpFormValidation} from "../http-response-messages/HttpFormValidation";
+import {TokenService} from "../services/TokenService";
+import {Token} from "../entities/Token";
 
 /**
  * AuthenticationController handles the routing for all authentication-related routes.
@@ -18,10 +20,12 @@ export class AuthenticationController {
     private _usernameRegex: RegExp = /^[a-zA-Z]{3,20}$/;
 
     private _userService: UserService;
+    private _tokenService: TokenService;
     private _tokenManager: TokenManager;
 
     constructor() {
         this._userService = new UserService();
+        this._tokenService = new TokenService();
         this._tokenManager = new TokenManager();
     }
 
@@ -34,25 +38,19 @@ export class AuthenticationController {
     loginUser = async (req: Request, res: Response): Promise<Response> => {
         const {email, password} = await req.body as IUserLoginRequest
 
-        if (!email) return HttpAuthentication.loginMissingField(res);
-        if (!password) return HttpAuthentication.loginMissingField(res);
+        if (!email) return HttpAuthError.loginMissingField(res);
+        if (!password) return HttpAuthError.loginMissingField(res);
 
         const user = await this._userService.getOneByEmail(email)
 
-        if (!user) return HttpAuthentication.loginIncorrectData(res)
-        if (!await this._verifyPassword(password, user)) return HttpAuthentication.loginIncorrectData(res)
+        if (!user) return HttpAuthError.loginIncorrectData(res)
+        if (!await this._verifyPassword(password, user)) return HttpAuthError.loginIncorrectData(res)
 
         const accessToken = this._tokenManager.createAccessToken(user);
+        const refreshToken = new Token()
+        refreshToken.token = this._tokenManager.createRefreshToken(user)
 
-        // créer et ajouté en db le refresh token si il n'existe pas par contre get le token en database si il est existe, si il est pas expirer
-        // et si il est pas banni
-        // je bannerai un token quand l'utilisateur seras déconnecté volontairement
-        // investiguer sur une methode qui clean les token aprés la date d'expiration
-        // garder le token banni jusqu'à la date d'expiration comme ça si le user se reconnecte avec ce token,
-        // faire quelque chose car c'est potentiellement un hacker
-        // investiguer pour voir si je pars pas dans un délire avec la todo plus haut ;=d
-
-        const refreshToken = this._tokenManager.createRefreshToken(user);
+        await this._tokenService.add(refreshToken, user);
 
         return res
             .status(200)
@@ -72,6 +70,27 @@ export class AuthenticationController {
     };
 
     /**
+     * Logs out the user by revoking the refresh token.
+     * @param {Request} req - Express Request object.
+     * @param {Response} res - Express Response object.
+     * @returns {Promise<Response>} - Promise of Express Response object.
+     */
+    logoutUser = async (req: Request, res: Response): Promise<Response> => {
+        const token = this._tokenManager.getAccessTokenFromHeaders(req);
+        if (!token) return HttpAuthError.noTokenProvided(res);
+
+        const refreshToken = await this._tokenService.getOne(token);
+        if (!refreshToken) return HttpAuthError.invalidToken(res);
+
+        await this._tokenService.revoke(refreshToken!);
+
+        return res.status(200).json({
+            status: 'success',
+            results: 'logged out successfully'
+        })
+    }
+
+    /**
      * Registers a new user.
      * @param req - Request object that includes the user information.
      * @param res - Response object to send a success message or error message.
@@ -80,17 +99,17 @@ export class AuthenticationController {
     registerUser = async (req: Request, res: Response): Promise<Response> => {
         const {firstname, lastname, email, password} = req.body as IUserRegisterRequest;
 
-        if (!firstname) return HttpUser.noUserFirstname(res);
-        if (!lastname) return HttpUser.noUserLastname(res);
-        if (!email) return HttpUser.noUserEmail(res);
-        if (!password) return HttpUser.noUserPassword(res);
+        if (!firstname) return HttpUserError.noUserFirstname(res);
+        if (!lastname) return HttpUserError.noUserLastname(res);
+        if (!email) return HttpUserError.noUserEmail(res);
+        if (!password) return HttpUserError.noUserPassword(res);
 
         if (!this._usernameRegex.test(firstname)) return HttpFormValidation.invalidFirstnameField(res);
         if (!this._usernameRegex.test(lastname)) return HttpFormValidation.invalidLastnameField(res);
         if (!this._emailRegex.test(email)) return HttpFormValidation.invalidEmailField(res);
         if (!this._passwordRegex.test(password)) return HttpFormValidation.invalidPasswordField(res);
 
-        if (await this._checkEmailExist(email)) return HttpAuthentication.userAlreadyExist(res);
+        if (await this._checkEmailExist(email)) return HttpAuthError.userAlreadyExist(res);
 
         bcrypt.hash(password, 10,
             async (err: Error | undefined, encrypted: string) => {

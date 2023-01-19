@@ -3,6 +3,7 @@ import rateLimit, {RateLimitRequestHandler} from 'express-rate-limit'
 import {TokenManager} from "../helpers/TokenManager";
 import {IRequest} from "../models/IRequest";
 import {IToken} from "../models/IToken";
+import {HttpAuthError} from "../http-response-messages/HttpAuthError";
 
 /**
  * Class representing a middleware.
@@ -27,18 +28,18 @@ export class Middleware {
     static authenticateToken = async (req: IRequest, res: Response, next: NextFunction) => {
         const tokenManager: TokenManager = new TokenManager()
 
-        const token = tokenManager.getTokenFromHeaders(req)
-        if (!token) return res.status(401).json({status: 'unauthorized'});
+        const token = tokenManager.getAccessTokenFromHeaders(req)
+        if (!token) return HttpAuthError.invalidToken(res);
 
         try {
             const decoded = tokenManager.decodeAccessToken(token) as IToken
 
-            if (tokenManager.isExpired(decoded)) return res.status(401).json({status: 'unauthorized'});
+            if (tokenManager.isExpired(decoded)) return HttpAuthError.tokenExpired(res);
 
             req.user = decoded as IToken
             next()
         } catch (error) {
-            res.status(401).json({status: 'unauthorized'});
+            return HttpAuthError.unauthorized(res);
         }
     }
 }

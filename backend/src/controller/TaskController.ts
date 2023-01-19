@@ -1,11 +1,11 @@
 import {Request, Response} from "express";
 import {Tasks} from "../entities/Tasks";
 import {User} from "../entities/User";
-import {HttpTask} from "../http-response-messages/HttpTask";
+import {HttpTaskError} from "../http-response-messages/HttpTaskError";
 import {IToken} from "../models/IToken";
 import {TaskService} from "../services/TaskService";
 import {UserService} from "../services/UserService";
-import {HttpAuthentication} from "../http-response-messages/HttpAuthentication";
+import {HttpAuthError} from "../http-response-messages/HttpAuthError";
 import {IRequest} from "../models/IRequest";
 
 /**
@@ -32,8 +32,8 @@ export class TaskController {
         const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
         const listOfCurrentTasks = await this._taskService.getCurrentTasks(user!)
 
-        if (!user) return HttpAuthentication.userNotFound(res)
-        if (!listOfCurrentTasks?.length) return HttpTask.noTaskFound(res)
+        if (!user) return HttpAuthError.userNotFound(res)
+        if (!listOfCurrentTasks?.length) return HttpTaskError.noTaskFound(res)
 
         return res
             .status(200)
@@ -55,8 +55,8 @@ export class TaskController {
         const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
         const listOfTaskHistory = await this._taskService.getTaskDone(user!)
 
-        if (!user) return HttpAuthentication.userNotFound(res)
-        if (!listOfTaskHistory?.length) return HttpTask.noTaskFound(res)
+        if (!user) return HttpAuthError.userNotFound(res)
+        if (!listOfTaskHistory?.length) return HttpTaskError.noTaskFound(res)
 
         return res
             .status(200)
@@ -76,11 +76,11 @@ export class TaskController {
         const decodedUser = req.user as IToken
         const task = req.body
 
-        if (!task) return HttpTask.missingParameters(res, "task")
+        if (!task) return HttpTaskError.missingParameters(res, "task")
 
         const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
 
-        if (!user) return HttpAuthentication.userNotFound(res)
+        if (!user) return HttpAuthError.userNotFound(res)
 
         const taskToStore: Tasks = new Tasks()
         taskToStore.task = task
@@ -105,11 +105,11 @@ export class TaskController {
     taskDone = async (req: Request, res: Response): Promise<Response> => {
         const {taskId} = req.body
 
-        if (!taskId) return HttpTask.missingParameters(res, "taskId")
+        if (!taskId) return HttpTaskError.missingParameters(res, "taskId")
 
         const task: Tasks | null = await this._taskService.getOne(taskId)
 
-        if (!task) return HttpTask.noTaskFound(res)
+        if (!task) return HttpTaskError.noTaskFound(res)
 
         await this._taskService.updateDoneField(task.id)
 

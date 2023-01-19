@@ -4,6 +4,7 @@ import {File} from "./File";
 import {Request} from "express";
 import * as dotenv from "dotenv";
 import {IToken} from "../models/IToken";
+import {TokenService} from "../services/TokenService";
 
 dotenv.config();
 
@@ -16,13 +17,14 @@ export class TokenManager {
     private readonly _accessTokenPublicKey: File = new File(process.env.ACCESS_TOKEN_PUBLIC_KEY_PATH!);
     private readonly _refreshTokenPrivateKey: File = new File(process.env.REFRESH_TOKEN_PRIVATE_KEY_PATH!);
     private readonly _refreshTokenPublicKey: File = new File(process.env.REFRESH_TOKEN_PUBLIC_KEY_PATH!);
+    private readonly _tokenService: TokenService = new TokenService();
 
     /**
      * Get the token from the headers of a request object.
      * @param req {Request} The request object containing the headers.
      * @return {string | undefined} The token string if it exists in the headers, otherwise undefined.
      */
-    getTokenFromHeaders = (req: Request): string | undefined => req.headers.authorization && req.headers.authorization.split(" ")[1]
+    getAccessTokenFromHeaders = (req: Request): string | undefined => req.headers.authorization && req.headers.authorization.split(" ")[1]
 
     /**
      * Check if the token are not expired.
@@ -32,6 +34,17 @@ export class TokenManager {
     isExpired(decoded: IToken): boolean {
         const current_time = Math.floor(Date.now() / 1000);
         return decoded.exp < current_time;
+    }
+
+    /**
+     * Checks if the token is blacklisted.
+     * @private
+     * @param {string} token - The token to check.
+     * @returns {Promise<boolean>} - Promise of a boolean indicating if the token is blacklisted.
+     */
+    isBlacklisted = async (token: string): Promise<boolean> => {
+        const blacklistedToken = await this._tokenService.getOne(token);
+        return !!blacklistedToken?.isRevoked;
     }
 
     /**

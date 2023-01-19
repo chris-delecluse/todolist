@@ -1,15 +1,18 @@
 import {Column, Entity, ObjectID, ObjectIdColumn} from "typeorm";
 
 @Entity()
-export class Tasks {
+export class Token {
     @ObjectIdColumn()
     id!: ObjectID
 
     @Column()
-    task!: string
+    token!: string
+
+    @Column()
+    expires!: number
 
     @Column({default: false})
-    done!: boolean
+    isRevoked!: boolean
 
     @ObjectIdColumn()
     userId!: ObjectID

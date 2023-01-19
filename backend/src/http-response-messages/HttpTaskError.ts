@@ -1,7 +1,7 @@
 import {Response} from "express";
 import {HttpResponse} from "./HttpResponse";
 
-export class HttpTask extends HttpResponse {
+export class HttpTaskError extends HttpResponse {
     static missingParameters = async (res: Response, field: string): Promise<Response> =>
         await this.httpResponseMessage(res, 400, 'failed', `please fill the field [${field}]`)
 
