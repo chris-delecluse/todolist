@@ -32,7 +32,7 @@ export class Middleware {
         if (!token) return HttpAuthError.invalidToken(res);
 
         try {
-            const decoded = tokenManager.decodeAccessToken(token) as IToken
+            const decoded = tokenManager.verifyAccessToken(token) as IToken
 
             if (tokenManager.isExpired(decoded)) return HttpAuthError.tokenExpired(res);
 

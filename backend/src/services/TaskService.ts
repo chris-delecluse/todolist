@@ -1,5 +1,5 @@
 import {AppDataSource} from "../data-source";
-import {getMongoRepository, MongoRepository, ObjectID, Repository} from "typeorm"
+import {InsertResult, MongoRepository, ObjectID, UpdateResult} from "typeorm"
 import {Tasks} from "../entities/Tasks";
 import {User} from "../entities/User";
 
@@ -18,12 +18,12 @@ export class TaskService {
         return await this._repository.findOneBy(id)
     }
 
-    add = async (task: Tasks): Promise<void> => {
-        await this._repository.insert(task)
+    add = async (task: Tasks): Promise<InsertResult> => {
+        return await this._repository.insert(task)
     }
 
-    updateDoneField = async (taskId: ObjectID): Promise<void> => {
-        await this._repository.update(taskId, {done: true})
+    updateDoneField = async (taskId: ObjectID): Promise<UpdateResult> => {
+       return await this._repository.update(taskId, {done: true})
     }
 }
 

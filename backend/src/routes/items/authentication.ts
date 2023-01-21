@@ -28,7 +28,7 @@ export const authentication: IRoute[] = [
     {
         method: "get",
         uri: "/refreshToken",
-        middleware: [Middleware.authenticateToken],
+        middleware: [],
         handler: tokenController.refreshToken
     }
 ];

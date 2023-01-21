@@ -12,7 +12,7 @@ export class HttpAuthError extends HttpResponse {
         await this.httpResponseMessage(res, 409, 'failed', 'user already exist')
 
     static userNotFound = async (res: Response): Promise<Response> =>
-        await this.httpResponseMessage(res, 404, 'failed', 'not found')
+        await this.httpResponseMessage(res, 404, 'failed', 'user not found')
 
     static invalidToken = async (res: Response): Promise<Response> =>
         await this.httpResponseMessage(res, 401, 'failed', 'invalid token')

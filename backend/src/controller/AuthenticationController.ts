@@ -47,24 +47,23 @@ export class AuthenticationController {
         if (!await this._verifyPassword(password, user)) return HttpAuthError.loginIncorrectData(res)
 
         const accessToken = this._tokenManager.createAccessToken(user);
-        const refreshToken = new Token()
-        refreshToken.token = this._tokenManager.createRefreshToken(user)
+        const refreshToken = this._tokenManager.createRefreshToken(user);
 
-        await this._tokenService.add(refreshToken, user);
+        const tokenToStore = new Token()
+        tokenToStore.accessToken = accessToken
+        tokenToStore.refreshToken = refreshToken
+        tokenToStore.refreshTokenExpires = this._tokenManager.getIat(refreshToken);
+        tokenToStore.userId = user.id;
+
+        await this._tokenService.add(tokenToStore);
 
         return res
             .status(200)
             .json({
                 status: 'success',
                 results: {
-                    access: {
-                        token: accessToken,
-                        expireIn: 900
-                    },
-                    refresh: {
-                        token: refreshToken,
-                        expireIn: 604800
-                    }
+                    token: accessToken,
+                    expireIn: 900,
                 }
             })
     };
@@ -79,10 +78,8 @@ export class AuthenticationController {
         const token = this._tokenManager.getAccessTokenFromHeaders(req);
         if (!token) return HttpAuthError.noTokenProvided(res);
 
-        const refreshToken = await this._tokenService.getOne(token);
-        if (!refreshToken) return HttpAuthError.invalidToken(res);
-
-        await this._tokenService.revoke(refreshToken!);
+        const tokenEntity = await this._tokenService.getOneByAccessToken(token);
+        if (!tokenEntity) return HttpAuthError.invalidToken(res);
 
         return res.status(200).json({
             status: 'success',

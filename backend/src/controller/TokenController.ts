@@ -3,16 +3,20 @@ import {TokenManager} from "../helpers/TokenManager";
 import {UserService} from "../services/UserService";
 import {IToken} from "../models/IToken";
 import {HttpAuthError} from "../http-response-messages/HttpAuthError";
+import {TokenService} from "../services/TokenService";
+import {Token} from "../entities/Token";
 
 /**
  *  * TokenController class handles the refreshing of JSON web tokens (JWT).
  */
 export class TokenController {
     private _tokenManager: TokenManager;
+    private _tokenService: TokenService;
     private _userService: UserService;
 
     constructor() {
         this._tokenManager = new TokenManager();
+        this._tokenService = new TokenService();
         this._userService = new UserService();
     }
 
@@ -24,26 +28,25 @@ export class TokenController {
      */
     refreshToken = async (req: Request, res: Response): Promise<Response> => {
         const token = this._tokenManager.getAccessTokenFromHeaders(req);
-
         if (!token) return HttpAuthError.noTokenProvided(res);
-        if (await this._tokenManager.isBlacklisted(token)) return HttpAuthError.invalidToken(res);
 
-        const decoded = this._tokenManager.decodeRefreshToken(token) as IToken;
+        const tokenStored = await this._tokenService.getOneByAccessToken(token);
+        if (!tokenStored) return HttpAuthError.invalidToken(res);
+
+        const decoded = this._tokenManager.verifyRefreshToken(tokenStored.refreshToken) as IToken;
         if (!decoded) return HttpAuthError.invalidToken(res);
-        if (this._tokenManager.isExpired(decoded)) return HttpAuthError.tokenExpired(res);
 
         const user = await this._userService.getOneById(decoded.id);
         if (!user) return HttpAuthError.userNotFound(res);
 
         const accessToken = this._tokenManager.createAccessToken(user);
+        await this._tokenService.updateAccessToken(token, accessToken);
 
         return res.status(200).json({
             status: 'success',
             results: {
-                access: {
-                    token: accessToken,
-                    expireIn: 900
-                }
+                token: accessToken,
+                expireIn: 900
             }
         });
     }

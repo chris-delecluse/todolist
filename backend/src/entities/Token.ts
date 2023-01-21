@@ -6,14 +6,16 @@ export class Token {
     id!: ObjectID
 
     @Column()
-    token!: string
+    accessToken!: string
 
     @Column()
-    expires!: number
+    refreshToken!: string
 
-    @Column({default: false})
-    isRevoked!: boolean
+    @Column()
+    refreshTokenExpires!: number | string
 
     @ObjectIdColumn()
     userId!: ObjectID
+
+    // client_IP a mettre plus tard :).
 }

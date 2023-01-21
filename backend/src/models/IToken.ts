@@ -1,5 +1,7 @@
+import { ObjectID } from "typeorm"
+
 export interface IToken {
-    id: string
+    id: string;
     email: string
     firstname: string
     lastname: string
