@@ -1,5 +1,7 @@
 import {Request} from "express";
+import {IToken} from "./IToken";
 
 export interface IRequest extends Request {
-    user?: any
+    user?: IToken
+    token?: string
 }

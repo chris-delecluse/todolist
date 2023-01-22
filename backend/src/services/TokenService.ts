@@ -1,4 +1,4 @@
-import {InsertResult, MongoRepository, UpdateResult} from "typeorm";
+import {DeleteResult, DeleteWriteOpResultObject, InsertResult, MongoRepository, ObjectID, UpdateResult} from "typeorm";
 import {Token} from "../entities/Token";
 import {AppDataSource} from "../data-source";
 
@@ -15,5 +15,13 @@ export class TokenService {
 
     updateAccessToken = async (accessToken: string, newAccessToken: string): Promise<UpdateResult> => {
         return await this.MongoRepository.update({accessToken}, {accessToken: newAccessToken})
+    }
+
+    deleteOne = async (token: Token): Promise<DeleteResult> => {
+        return await this.MongoRepository.delete(token)
+    }
+
+    deleteManyByUserId = async (userId: ObjectID): Promise<DeleteWriteOpResultObject> => {
+        return await this.MongoRepository.deleteMany({userId})
     }
 }

@@ -27,6 +27,12 @@ export const authentication: IRoute[] = [
     },
     {
         method: "get",
+        uri: "/logoutAll",
+        middleware: [Middleware.authenticateToken],
+        handler: authController.logoutAllSessions
+    },
+    {
+        method: "get",
         uri: "/refreshToken",
         middleware: [],
         handler: tokenController.refreshToken

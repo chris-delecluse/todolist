@@ -10,6 +10,7 @@ import {HttpUserError} from "../http-response-messages/HttpUserError";
 import {HttpFormValidation} from "../http-response-messages/HttpFormValidation";
 import {TokenService} from "../services/TokenService";
 import {Token} from "../entities/Token";
+import {IRequest} from "../models/IRequest";
 
 /**
  * AuthenticationController handles the routing for all authentication-related routes.
@@ -74,16 +75,31 @@ export class AuthenticationController {
      * @param {Response} res - Express Response object.
      * @returns {Promise<Response>} - Promise of Express Response object.
      */
-    logoutUser = async (req: Request, res: Response): Promise<Response> => {
-        const token = this._tokenManager.getAccessTokenFromHeaders(req);
-        if (!token) return HttpAuthError.noTokenProvided(res);
+    logoutUser = async (req: IRequest, res: Response): Promise<Response> => {
+        const token = req.token;
 
-        const tokenEntity = await this._tokenService.getOneByAccessToken(token);
+        const tokenEntity = await this._tokenService.getOneByAccessToken(token!);
         if (!tokenEntity) return HttpAuthError.invalidToken(res);
+
+        await this._tokenService.deleteOne(tokenEntity);
 
         return res.status(200).json({
             status: 'success',
             results: 'logged out successfully'
+        })
+    }
+
+    logoutAllSessions = async (req: IRequest, res: Response): Promise<Response> => {
+        const decoded = req.user;
+
+        const user = await this._userService.getOneById(decoded!.id);
+        if (!user) return HttpAuthError.userNotFound(res);
+
+        await this._tokenService.deleteManyByUserId(user.id);
+
+        return res.status(200).json({
+            status: 'success',
+            results: 'logged out all sessions successfully'
         })
     }
 

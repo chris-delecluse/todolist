@@ -36,7 +36,8 @@ export class Middleware {
 
             if (tokenManager.isExpired(decoded)) return HttpAuthError.tokenExpired(res);
 
-            req.user = decoded as IToken
+            req.user = decoded
+            req.token = token
             next()
         } catch (error) {
             return HttpAuthError.unauthorized(res);
