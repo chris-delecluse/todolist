@@ -39,9 +39,6 @@ export class AuthenticationController {
     loginUser = async (req: Request, res: Response): Promise<Response> => {
         const {email, password} = await req.body as IUserLoginRequest
 
-        const ip = req.socket.remoteAddress
-        console.log("ip address " + ip)
-
         if (!email) return HttpAuthError.loginMissingField(res);
         if (!password) return HttpAuthError.loginMissingField(res);
 
