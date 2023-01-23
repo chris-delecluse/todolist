@@ -76,6 +76,11 @@ export class TokenManager {
      */
     verifyRefreshToken = (token: string) => jwt.verify(token, this.getPublicRefreshKey())
 
+    /**
+     * Get the expiration date of the token.
+     * @param token
+     * @return {number} The expiration timestamp of the token.
+     */
     getIat = (token: string): number => {
         const {iat} = jwt.decode(token) as JwtPayload;
         return iat as number;

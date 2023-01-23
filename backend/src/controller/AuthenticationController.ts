@@ -71,7 +71,7 @@ export class AuthenticationController {
     };
 
     /**
-     * Logs out the user by revoking the refresh token.
+     * Logs out the user by deleting the token.
      * @param {Request} req - Express Request object.
      * @param {Response} res - Express Response object.
      * @returns {Promise<Response>} - Promise of Express Response object.
@@ -90,6 +90,12 @@ export class AuthenticationController {
         })
     }
 
+    /**
+     * Logs out the user by deleting all tokens.
+     * @param {Request} req - Express Request object.
+     * @param {Response} res - Express Response object.
+     * @returns {Promise<Response>} - Promise of Express Response object.
+     */
     logoutAllSessions = async (req: IRequest, res: Response): Promise<Response> => {
         const decoded = req.user;
 
