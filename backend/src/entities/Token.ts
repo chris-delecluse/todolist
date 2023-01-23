@@ -14,8 +14,9 @@ export class Token {
     @Column()
     refreshTokenExpires!: number | string
 
+    @Column()
+    clientIp?: string
+
     @ObjectIdColumn()
     userId!: ObjectID
-
-    // client_IP a mettre plus tard :).
 }

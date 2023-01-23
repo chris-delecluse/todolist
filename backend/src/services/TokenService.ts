@@ -13,8 +13,12 @@ export class TokenService {
         return await this.MongoRepository.findOneBy({accessToken})
     }
 
-    updateAccessToken = async (accessToken: string, newAccessToken: string): Promise<UpdateResult> => {
-        return await this.MongoRepository.update({accessToken}, {accessToken: newAccessToken})
+    // updateOne = async (accessToken: string, newAccessToken: string): Promise<UpdateResult> => {
+    //     return await this.MongoRepository.update({accessToken}, {accessToken: newAccessToken})
+    // }
+
+    updateOne = async (oldToken: Token, newToken: Token): Promise<UpdateResult> => {
+        return await this.MongoRepository.update(oldToken, newToken)
     }
 
     deleteOne = async (token: Token): Promise<DeleteResult> => {

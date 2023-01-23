@@ -4,6 +4,7 @@ import {TokenManager} from "../helpers/TokenManager";
 import {IRequest} from "../models/IRequest";
 import {IToken} from "../models/IToken";
 import {HttpAuthError} from "../http-response-messages/HttpAuthError";
+import {TokenService} from "../services/TokenService";
 
 /**
  * Class representing a middleware.
@@ -17,7 +18,7 @@ export class Middleware {
         max: 50,
         standardHeaders: true,
         legacyHeaders: false
-    })
+    });
 
     /**
      * A static method for handling token authentication.
@@ -26,21 +27,27 @@ export class Middleware {
      * @param {NextFunction} next - The Express next function.
      */
     static authenticateToken = async (req: IRequest, res: Response, next: NextFunction) => {
-        const tokenManager: TokenManager = new TokenManager()
+        const tokenManager: TokenManager = new TokenManager();
+        const tokenService: TokenService = new TokenService();
 
-        const token = tokenManager.getAccessTokenFromHeaders(req)
+        const clientIp = req.socket.remoteAddress;
+        const token = tokenManager.getAccessTokenFromHeaders(req);
         if (!token) return HttpAuthError.invalidToken(res);
 
+        const tokenStored = await tokenService.getOneByAccessToken(token);
+        if (!tokenStored) return HttpAuthError.invalidToken(res);
+        if (clientIp !== tokenStored.clientIp) return HttpAuthError.invalidToken(res);
+
         try {
-            const decoded = tokenManager.verifyAccessToken(token) as IToken
+            const decoded = tokenManager.verifyAccessToken(token) as IToken;
 
             if (tokenManager.isExpired(decoded)) return HttpAuthError.tokenExpired(res);
 
-            req.user = decoded
-            req.token = token
-            next()
+            req.user = decoded;
+            req.token = token;
+            next();
         } catch (error) {
             return HttpAuthError.unauthorized(res);
         }
-    }
+    };
 }

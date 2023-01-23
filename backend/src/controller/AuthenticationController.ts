@@ -39,6 +39,9 @@ export class AuthenticationController {
     loginUser = async (req: Request, res: Response): Promise<Response> => {
         const {email, password} = await req.body as IUserLoginRequest
 
+        const ip = req.socket.remoteAddress
+        console.log("ip address " + ip)
+
         if (!email) return HttpAuthError.loginMissingField(res);
         if (!password) return HttpAuthError.loginMissingField(res);
 
@@ -55,6 +58,7 @@ export class AuthenticationController {
         tokenToStore.refreshToken = refreshToken
         tokenToStore.refreshTokenExpires = this._tokenManager.getIat(refreshToken);
         tokenToStore.userId = user.id;
+        tokenToStore.clientIp = req.socket.remoteAddress
 
         await this._tokenService.add(tokenToStore);
 

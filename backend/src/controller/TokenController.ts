@@ -40,7 +40,8 @@ export class TokenController {
         if (!user) return HttpAuthError.userNotFound(res);
 
         const accessToken = this._tokenManager.createAccessToken(user);
-        await this._tokenService.updateAccessToken(token, accessToken);
+        const tokenToUpdated: Token = {...tokenStored, accessToken};
+        await this._tokenService.updateOne(tokenStored, tokenToUpdated);
 
         return res.status(200).json({
             status: 'success',
