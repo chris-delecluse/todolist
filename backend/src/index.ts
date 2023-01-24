@@ -1,9 +1,10 @@
 import "reflect-metadata"
 import * as dotenv from "dotenv";
-import {Server} from "./server";
-import {AppDataSource} from "./data-source";
-import {routes} from "./routes";
-import {readSwaggerConfig} from "./helpers/mergeSwaggerConfig";
+import { Server } from "./server";
+import { AppDataSource } from "./data-source";
+import { routes } from "./routes";
+import { readSwaggerConfig } from "./helpers/mergeSwaggerConfig";
+import { Request, Response } from "express";
 
 dotenv.config();
 
@@ -12,18 +13,22 @@ const app = Server.getServer();
 
 const exampleOfSwaggerMerge = readSwaggerConfig('./src/swagger/endpoints');
 
+app.get('/', (req: Request, res: Response) => {
+	res.status(200).send('Hello World!');
+});
+
 (async () => {
-    for await (const route of routes) {
-        app[route.method](route.uri, route.middleware, route.handler);
-    }
+	for await (const route of routes) {
+		app[route.method](route.uri, route.middleware, route.handler);
+	}
 })()
 
 if (process.env.NODE_ENV != "test") {
-    AppDataSource.initialize()
-        .then(() => console.log('connection with database established'))
-        .catch((err) => console.log(err))
+	AppDataSource.initialize()
+		.then(() => console.log('connection with database established'))
+		.catch((err) => console.log(err))
 
-    app.listen(port, () => console.log(`server listen on: http://localhost:${port}`));
+	app.listen(port, () => console.log(`server listen on: http://localhost:${port}`));
 }
 
 export default app;

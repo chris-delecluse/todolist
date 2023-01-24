@@ -1,10 +1,8 @@
-import { ObjectID } from "typeorm"
-
 export interface IToken {
-    id: string;
-    email: string
-    firstname: string
-    lastname: string
-    iat: number
-    exp: number
+	id: string;
+	email: string
+	firstname: string
+	lastname: string
+	iat: number
+	exp: number
 }

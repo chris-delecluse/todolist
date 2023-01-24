@@ -7,11 +7,11 @@ import * as fs from "fs";
  * @return {object} - The merged swagger configs object
  */
 const mergeSwaggerConfigs = (config: string[]): object => {
-    return config.reduce((mergedConfig: object, config: string) => {
-        const configFile = YAML.load(config);
+	return config.reduce((mergedConfig: object, config: string) => {
+		const configFile = YAML.load(config);
 
-        return {...configFile, ...mergedConfig};
-    }, {});
+		return { ...configFile, ...mergedConfig };
+	}, {});
 }
 
 /**
@@ -20,11 +20,11 @@ const mergeSwaggerConfigs = (config: string[]): object => {
  * @return {object} - The merged swagger configs object
  */
 export const readSwaggerConfig = (directory: string): object => {
-    const files = fs.readdirSync(directory);
+	const files = fs.readdirSync(directory);
 
-    const configs: string[] = files
-        .filter(file => file.endsWith('.yml'))
-        .map(file => `${directory}/${file}`);
+	const configs: string[] = files
+		.filter(file => file.endsWith('.yml'))
+		.map(file => `${directory}/${file}`);
 
-    return mergeSwaggerConfigs(configs);
+	return mergeSwaggerConfigs(configs);
 };

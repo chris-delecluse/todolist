@@ -1,123 +1,123 @@
-import {Request, Response} from "express";
-import {Tasks} from "../entities/Tasks";
-import {User} from "../entities/User";
-import {HttpTaskError} from "../http-response-messages/HttpTaskError";
-import {IToken} from "../models/IToken";
-import {TaskService} from "../services/TaskService";
-import {UserService} from "../services/UserService";
-import {HttpAuthError} from "../http-response-messages/HttpAuthError";
-import {IRequest} from "../models/IRequest";
+import { Request, Response } from "express";
+import { Tasks } from "../entities/Tasks";
+import { User } from "../entities/User";
+import { HttpTaskError } from "../http-response-messages/HttpTaskError";
+import { IToken } from "../models/IToken";
+import { TaskService } from "../services/TaskService";
+import { UserService } from "../services/UserService";
+import { HttpAuthError } from "../http-response-messages/HttpAuthError";
+import { IRequest } from "../models/IRequest";
 
 /**
  * TaskController handles the routing for all task-related routes.
  */
 export class TaskController {
-    private _taskService: TaskService;
-    private _userService: UserService;
+	private _taskService: TaskService;
+	private _userService: UserService;
 
-    constructor() {
-        this._taskService = new TaskService()
-        this._userService = new UserService()
-    }
+	constructor() {
+		this._taskService = new TaskService()
+		this._userService = new UserService()
+	}
 
-    /**
-     * Retrieves the current tasks for a user.
-     * @param req - Express request object that includes the user.
-     * @param res - Express response object to send the task list or error message.
-     * @returns Returns a response object with the current tasks or an error message.
-     */
-    getUserCurrentTasks = async (req: IRequest, res: Response): Promise<Response> => {
-        const decodedUser = req.user as IToken;
+	/**
+	 * Retrieves the current tasks for a user.
+	 * @param req - Express request object that includes the user.
+	 * @param res - Express response object to send the task list or error message.
+	 * @returns Returns a response object with the current tasks or an error message.
+	 */
+	getUserCurrentTasks = async (req: IRequest, res: Response): Promise<Response> => {
+		const decodedUser = req.user as IToken;
 
-        const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
-        const listOfCurrentTasks = await this._taskService.getCurrentTasks(user!)
+		const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
+		const listOfCurrentTasks = await this._taskService.getCurrentTasks(user!)
 
-        if (!user) return HttpAuthError.userNotFound(res)
-        if (!listOfCurrentTasks?.length) return HttpTaskError.noTaskFound(res)
+		if (!user) return HttpAuthError.userNotFound(res)
+		if (!listOfCurrentTasks?.length) return HttpTaskError.noTaskFound(res)
 
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                results: listOfCurrentTasks
-            })
-    }
+		return res
+			.status(200)
+			.json({
+				status: 'success',
+				results: listOfCurrentTasks
+			})
+	}
 
-    /**
-     * Retrieves the task history for a user.
-     * @param req - Express request object that includes the user.
-     * @param res - Express response object to send the task list or error message.
-     * @returns Returns a response object with the task history or an error message.
-     */
-    getUserTaskHistory = async (req: IRequest, res: Response): Promise<Response> => {
-        const decodedUser = req.user as IToken;
+	/**
+	 * Retrieves the task history for a user.
+	 * @param req - Express request object that includes the user.
+	 * @param res - Express response object to send the task list or error message.
+	 * @returns Returns a response object with the task history or an error message.
+	 */
+	getUserTaskHistory = async (req: IRequest, res: Response): Promise<Response> => {
+		const decodedUser = req.user as IToken;
 
-        const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
-        const listOfTaskHistory = await this._taskService.getTaskDone(user!)
+		const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
+		const listOfTaskHistory = await this._taskService.getTaskDone(user!)
 
-        if (!user) return HttpAuthError.userNotFound(res)
-        if (!listOfTaskHistory?.length) return HttpTaskError.noTaskFound(res)
+		if (!user) return HttpAuthError.userNotFound(res)
+		if (!listOfTaskHistory?.length) return HttpTaskError.noTaskFound(res)
 
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                results: listOfTaskHistory
-            })
-    }
+		return res
+			.status(200)
+			.json({
+				status: 'success',
+				results: listOfTaskHistory
+			})
+	}
 
-    /**
-     * Adds a new task for a user.
-     * @param req - Express request object that includes the user and task information.
-     * @param res - Express response object to send a success message or error message.
-     * @returns Returns a response object with a success message or an error message.
-     */
-    addTask = async (req: IRequest, res: Response): Promise<Response> => {
-        const decodedUser = req.user as IToken
-        const task = req.body
+	/**
+	 * Adds a new task for a user.
+	 * @param req - Express request object that includes the user and task information.
+	 * @param res - Express response object to send a success message or error message.
+	 * @returns Returns a response object with a success message or an error message.
+	 */
+	addTask = async (req: IRequest, res: Response): Promise<Response> => {
+		const decodedUser = req.user as IToken
+		const task = req.body
 
-        if (!task) return HttpTaskError.missingParameters(res, "task")
+		if (!task) return HttpTaskError.missingParameters(res, "task")
 
-        const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
+		const user: User | null = await this._userService.getOneByEmail(decodedUser.email)
 
-        if (!user) return HttpAuthError.userNotFound(res)
+		if (!user) return HttpAuthError.userNotFound(res)
 
-        const taskToStore: Tasks = new Tasks()
-        taskToStore.task = task
-        taskToStore.userId = user.id
+		const taskToStore: Tasks = new Tasks()
+		taskToStore.task = task
+		taskToStore.userId = user.id
 
-        await this._taskService.add(taskToStore)
+		await this._taskService.add(taskToStore)
 
-        return res
-            .status(201)
-            .json({
-                status: 'success',
-                message: 'task added successfully'
-            })
-    }
+		return res
+			.status(201)
+			.json({
+				status: 'success',
+				message: 'task added successfully'
+			})
+	}
 
-    /**
-     * Marks a task as done.
-     * @param req - Express request object that includes the taskId.
-     * @param res - Express response object to send a success message or error message.
-     * @returns Returns a response object with a success message or an error message.
-     */
-    taskDone = async (req: Request, res: Response): Promise<Response> => {
-        const {taskId} = req.body
+	/**
+	 * Marks a task as done.
+	 * @param req - Express request object that includes the taskId.
+	 * @param res - Express response object to send a success message or error message.
+	 * @returns Returns a response object with a success message or an error message.
+	 */
+	taskDone = async (req: Request, res: Response): Promise<Response> => {
+		const { taskId } = req.body
 
-        if (!taskId) return HttpTaskError.missingParameters(res, "taskId")
+		if (!taskId) return HttpTaskError.missingParameters(res, "taskId")
 
-        const task: Tasks | null = await this._taskService.getOne(taskId)
+		const task: Tasks | null = await this._taskService.getOne(taskId)
 
-        if (!task) return HttpTaskError.noTaskFound(res)
+		if (!task) return HttpTaskError.noTaskFound(res)
 
-        await this._taskService.updateDoneField(task.id)
+		await this._taskService.updateDoneField(task.id)
 
-        return res
-            .status(200)
-            .json({
-                status: 'success',
-                message: 'task updated successfully'
-            })
-    };
+		return res
+			.status(200)
+			.json({
+				status: 'success',
+				message: 'task updated successfully'
+			})
+	};
 }

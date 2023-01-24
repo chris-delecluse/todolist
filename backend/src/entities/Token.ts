@@ -1,22 +1,22 @@
-import {Column, Entity, ObjectID, ObjectIdColumn} from "typeorm";
+import { Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 
 @Entity()
 export class Token {
-    @ObjectIdColumn()
-    id!: ObjectID
+	@ObjectIdColumn()
+	id!: ObjectID
 
-    @Column()
-    accessToken!: string
+	@Column()
+	accessToken!: string
 
-    @Column()
-    refreshToken!: string
+	@Column()
+	refreshToken!: string
 
-    @Column()
-    refreshTokenExpires!: number | string
+	@Column()
+	refreshTokenExpires!: number | string
 
-    @Column()
-    clientIp?: string
+	@Column()
+	clientIp?: string
 
-    @ObjectIdColumn()
-    userId!: ObjectID
+	@ObjectIdColumn()
+	userId!: ObjectID
 }
